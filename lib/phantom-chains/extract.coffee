@@ -7,8 +7,6 @@ _        = require("underscore")
 
 url = require("url")
 
-filterChain  = require("./filter")
-
 module.exports = exports =
   loadPageContent: (page, options, next) ->
     if typeof options.html is "string"
@@ -55,7 +53,16 @@ module.exports = exports =
             options.cout "|> Ignoring stylesheet (#{sheet.href}) because of ignore-rule #{ignore.toString()}"
             return no
 
-          return sheet isnt ignore
+          return sheet.href isnt ignore
+
+        if options.ignoreExternalSheets
+          urlParsed = url.parse(options.url)
+          sheetUrlParsed = url.parse(sheet.href)
+          if urlParsed.hostname isnt sheetUrlParsed.hostname
+            options.cout "|> Ignoring stylesheet (#{sheet.href}) because external stylesheets are ignored"
+            return no
+          
+          return true
 
       stylesheets = stylesheets.filter((sheet) -> return media.indexOf(sheet.media) isnt -1)
 
@@ -123,6 +130,8 @@ module.exports = exports =
 
   filter: (page, options, stylesheets, styles, next) ->
     options.cout "Starting to filter out rules ..."
+
+    filterChain = require("./filter")
 
     for action of filterChain
       filterChain[action] = filterChain[action].bind(null, page, options, styles)
