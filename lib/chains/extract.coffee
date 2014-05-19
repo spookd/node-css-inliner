@@ -4,6 +4,9 @@ css      = require("css")
 CleanCSS = require("clean-css")
 _        = require("underscore")
 
+
+url = require("url")
+
 filterChain  = require("./filter")
 
 module.exports = exports =
@@ -82,6 +85,10 @@ module.exports = exports =
           options.cout "|> Stylesheet downloaded: #{sheet.href}"
 
         body = "" if not error and (response.statusCode < 200 or response.statusCode > 399)
+
+        # Rebase url()'s
+        body = body.replace /url\((["']|)([^"'\(\)]+)\1\)/g, (m, quote, uri) ->
+          return "url(#{quote}#{url.resolve(sheet.href, uri)}#{quote})"
 
         sheet.body = body
 
