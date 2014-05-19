@@ -1,10 +1,11 @@
 module.exports = exports =
-  expose: (page, options, stylesheets, finalCSS, next) ->
+  exposeStylesheets: (page, options, stylesheets, finalCSS, next) ->
     return next(null) if not options.cssExpose or typeof options.cssExpose isnt "string"
 
     evalFn = (name, stylesheets) ->
       script = document.createElement("script")
-      script.innerHTML = "var #{name} = #{JSON.stringify(stylesheets)};"
+      script.innerHTML = "#{name} = #{JSON.stringify(stylesheets)};"
+      script.innerHTML = "var " + script.innerHTML if name.indexOf(".") < 0
       return document.getElementsByTagName("body")[0].appendChild(script)
 
     resultFn = (error) ->
@@ -12,16 +13,6 @@ module.exports = exports =
 
     page.evaluate(evalFn, resultFn, options.cssExpose, stylesheets)
 
-  exposeStylesheets: (page, options, stylesheets, finalCSS, next) ->
-    evalFn = (name, stylesheets) ->
-      script = document.createElement("script")
-      script.innerHTML = "var #{name} = #{JSON.stringify(stylesheets)};"
-      return document.getElementsByTagName("body")[0].appendChild(script)
-
-    resultFn = (error) ->
-      next(error)
-
-    page.evaluate(evalFn, resultFn, options.cssExpose, stylesheets)
 
   removeStylesheetsAndInjectUsedStyles: (page, options, stylesheets, finalCSS, next) ->
     evalFn = (options, stylesheets, finalCSS) ->

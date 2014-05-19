@@ -1,6 +1,6 @@
 async   = require("async")
 css     = require("css")
-_       = require("underscore")
+_       = require("lodash")
 
 dePseudify = (->
   ignoredPseudos = [
@@ -23,7 +23,7 @@ dePseudify = (->
 )()
 
 module.exports = exports =
-  findSelectorsUsed: (page, options, styles, next, test) ->
+  findSelectorsUsed: (document, options, styles, next, test) ->
     options.cout "|> Finding selectors used", test
 
     filterUsed = (rules, cb, recursive = no) ->
@@ -38,26 +38,20 @@ module.exports = exports =
       filterFn = (error, selectors) ->
         return cb(error, selectors) if recursive
 
-        evalFn = (selectors) ->
-          selectors = selectors.filter (selector) ->
-            try
-              return yes if document.querySelector(selector)?
-            catch e
-              return yes
+        selectors = selectors.filter (selector) ->
+          try
+            return yes if document.querySelector(selector)
+          catch e
+            return yes
 
-          return selectors
-
-        resultsFn = (error, used_selectors) ->
-          return cb(error, used_selectors)
-        
-        page.evaluate(evalFn, resultsFn, selectors.map(dePseudify))
+        cb(null, selectors)
 
       return async.concat(rules, concatFn, filterFn)
 
     filterUsed styles.rules, (error, usedSelectors) ->
       next(null, usedSelectors)
 
-  removeUnusedRules: (page, options, styles, usedSelectors, next) ->
+  removeUnusedRules: (document, options, styles, usedSelectors, next) ->
     options.cout "|> Removing unused selectors"
     selectorsToIgnore = options.ignoreSelectors
 

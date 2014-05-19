@@ -1,13 +1,9 @@
-async    = require("async")
-request  = require("request")
-css      = require("css")
-CleanCSS = require("clean-css")
-_        = require("underscore")
-
-
-url = require("url")
-
-filterChain  = require("./filter")
+async       = require("async")
+request     = require("request")
+css         = require("css")
+CleanCSS    = require("clean-css")
+_           = require("lodash")
+url         = require("url")
 
 module.exports = exports =
   loadPageContent: (page, options, next) ->
@@ -49,13 +45,21 @@ module.exports = exports =
       stylesheets ||= []
 
       # Loop through ignore list
+      urlParsed = url.parse(options.url)
+
       stylesheets = stylesheets.filter (sheet) ->
         _.every options.ignoreSheets, (ignore) ->
           if ignore instanceof RegExp and ignore.test(sheet.href)
             options.cout "|> Ignoring stylesheet (#{sheet.href}) because of ignore-rule #{ignore.toString()}"
             return no
 
-          return sheet isnt ignore
+          return sheet.href isnt ignore
+
+        if options.ignoreExternalSheets and urlParsed.hostname isnt url.parse(sheet.href).hostname
+          options.cout "|> Ignoring stylesheet (#{sheet.href}) because external stylesheets are ignored"
+          return no
+
+        return yes
 
       stylesheets = stylesheets.filter((sheet) -> return media.indexOf(sheet.media) isnt -1)
 
@@ -74,7 +78,7 @@ module.exports = exports =
     mapFn = (sheet, done) ->
       requestOptions =
         headers:
-          "User-Agent": "CSS Inliner for node.js"
+          "User-Agent": options.userAgent
 
       request sheet.href, requestOptions, (error, response, body) ->
         if error
@@ -124,6 +128,8 @@ module.exports = exports =
   filter: (page, options, stylesheets, styles, next) ->
     options.cout "Starting to filter out rules ..."
 
+    filterChain = require("./filter")
+
     for action of filterChain
       filterChain[action] = filterChain[action].bind(null, page, options, styles)
 
@@ -143,5 +149,5 @@ module.exports = exports =
 
       next(null, stylesheets, finalCSS)
     catch e
-      next(error)
+      next(e.toString())
     
