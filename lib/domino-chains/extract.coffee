@@ -38,8 +38,6 @@ module.exports = exports =
 
     urlParsed = url.parse(options.url)
 
-    console.log sheets
-
     sheets = sheets.filter (sheet) ->
       _.every options.ignoreSheets, (ignore) ->
         if ignore instanceof RegExp and ignore.test(sheet.href)
