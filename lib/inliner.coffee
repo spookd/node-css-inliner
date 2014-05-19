@@ -29,17 +29,20 @@ module.exports = exports = (options = {}, cb) ->
 
   # Aquire a PhantomJS instance from our pool
   Phantom.acquire (error, ph) ->
-    # In case of error, this is _always_ called
-    failed = (error) ->
+    if error
       Phantom.release(ph)
       cb(error)
-      return error
-
-    return failed(error) if error
+      return
 
     # Create a page
     ph.createPage (error, page) ->
-      return failed(error) if error
+      origCb = cb
+      cb     = (e, cssOrHtml) ->
+        page.close()
+        Phantom.release(ph)
+        origCb(e, cssOrHtml)
+
+      return cb(error) if error
 
       if options.log
         console.log "Inlining #{options.url}", if options.html then "(fake URL with content)" else "" 
