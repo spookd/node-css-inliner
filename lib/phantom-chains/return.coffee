@@ -4,13 +4,15 @@ module.exports = exports =
 
     evalFn = (name, stylesheets) ->
       script = document.createElement("script")
-      script.innerHTML = "var #{name} = #{JSON.stringify(stylesheets)};"
+      script.innerHTML = "#{name} = #{JSON.stringify(stylesheets)};"
+      script.innerHTML = "var " + script.innerHTML if name.indexOf(".") < 0
       return document.getElementsByTagName("body")[0].appendChild(script)
 
     resultFn = (error) ->
       next(error)
 
     page.evaluate(evalFn, resultFn, options.cssExpose, stylesheets)
+
 
   removeStylesheetsAndInjectUsedStyles: (page, options, stylesheets, finalCSS, next) ->
     evalFn = (options, stylesheets, finalCSS) ->

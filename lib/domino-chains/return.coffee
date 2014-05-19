@@ -3,9 +3,9 @@ module.exports = exports =
     return next(null) if not options.cssExpose or typeof options.cssExpose isnt "string"
 
     name = options.cssExpose
-    
+
     script = document.createElement("script")
-    script.innerHTML = "#{name} = #{JSON.stringify(stylesheets)};"
+    script.innerHTML = "#{name} = #{JSON.stringify(sheets)};"
     script.innerHTML = "var " + script.innerHTML if name.indexOf(".") < 0
     document.getElementsByTagName("body")[0].appendChild(script)
 

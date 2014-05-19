@@ -1,11 +1,9 @@
-async    = require("async")
-request  = require("request")
-css      = require("css")
-CleanCSS = require("clean-css")
-_        = require("underscore")
-
-
-url = require("url")
+async       = require("async")
+request     = require("request")
+css         = require("css")
+CleanCSS    = require("clean-css")
+_           = require("lodash")
+url         = require("url")
 
 module.exports = exports =
   loadPageContent: (page, options, next) ->
@@ -47,6 +45,8 @@ module.exports = exports =
       stylesheets ||= []
 
       # Loop through ignore list
+      urlParsed = url.parse(options.url)
+
       stylesheets = stylesheets.filter (sheet) ->
         _.every options.ignoreSheets, (ignore) ->
           if ignore instanceof RegExp and ignore.test(sheet.href)
@@ -55,14 +55,11 @@ module.exports = exports =
 
           return sheet.href isnt ignore
 
-        if options.ignoreExternalSheets
-          urlParsed = url.parse(options.url)
-          sheetUrlParsed = url.parse(sheet.href)
-          if urlParsed.hostname isnt sheetUrlParsed.hostname
-            options.cout "|> Ignoring stylesheet (#{sheet.href}) because external stylesheets are ignored"
-            return no
-          
-          return true
+        if options.ignoreExternalSheets and urlParsed.hostname isnt url.parse(sheet.href).hostname
+          options.cout "|> Ignoring stylesheet (#{sheet.href}) because external stylesheets are ignored"
+          return no
+
+        return yes
 
       stylesheets = stylesheets.filter((sheet) -> return media.indexOf(sheet.media) isnt -1)
 
@@ -81,7 +78,7 @@ module.exports = exports =
     mapFn = (sheet, done) ->
       requestOptions =
         headers:
-          "User-Agent": "CSS Inliner for node.js"
+          "User-Agent": options.userAgent
 
       request sheet.href, requestOptions, (error, response, body) ->
         if error
@@ -152,5 +149,5 @@ module.exports = exports =
 
       next(null, stylesheets, finalCSS)
     catch e
-      next(error)
+      next(e.toString())
     

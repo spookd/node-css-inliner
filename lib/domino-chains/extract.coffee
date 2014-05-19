@@ -16,7 +16,9 @@ getElementAttributes = (el, ignore...) ->
 
 module.exports = exports =
   extractStylesheets: (window, document, options, next) ->
-    options.cout "Extracting stylesheets"
+    options.cout "Extracting stylesheets from page"
+    
+    media  = _.union(["", "all", "screen"], options.cssMedia)
     links  = document.querySelectorAll("link[rel='stylesheet']")
     sheets = []
 
@@ -36,6 +38,8 @@ module.exports = exports =
 
     urlParsed = url.parse(options.url)
 
+    console.log sheets
+
     sheets = sheets.filter (sheet) ->
       _.every options.ignoreSheets, (ignore) ->
         if ignore instanceof RegExp and ignore.test(sheet.href)
@@ -44,12 +48,11 @@ module.exports = exports =
 
         return sheet.href isnt ignore
 
-      if options.ignoreExternalSheets
-        if urlParsed.hostname isnt url.parse(sheet.href).hostname
-          options.cout "|> Ignoring stylesheet (#{sheet.href}) because external stylesheets are ignored"
-          return no
+      if options.ignoreExternalSheets and urlParsed.hostname isnt url.parse(sheet.href).hostname
+        options.cout "|> Ignoring stylesheet (#{sheet.href}) because external stylesheets are ignored"
+        return no
         
-        return true
+      return yes
 
     sheets = sheets.filter((sheet) -> return media.indexOf(sheet.media) isnt -1)
 

@@ -1,35 +1,49 @@
 async    = require("async")
-_        = require("underscore")
+_        = require("lodash")
 Phantom  = require("./phantom")
 domino   = require("domino")
 request  = require("request")
 
 defaultOptions =
   # Core
-  log:             no
+  log:                  no
 
   # CSS
-  cssMedia:        ""
-  cssMinify:       no
-  cssOnly:         no
-  cssId:           no
-  cssExpose:       no
+  cssMedia:             ""
+  cssMinify:            no
+  cssOnly:              no
+  cssId:                no
+  cssExpose:            no
 
-  # Experimental
-  useDomino:       no
+
+  # Ignore
+  ignoreSheets:         []
+  ignoreSelectors:      []
+  ignoreExternalSheets: no
 
   # Miscellaneous
-  ignoreSheets:    []
-  ignoreSelectors: []
-  # ...
-  userAgent:       "CSS Inliner for node.js by Nicolai Persson"
+  userAgent:            "CSS Inliner for node.js by Nicolai Persson"
+  # !! Experimental
+  useDomino:            no
 
 module.exports = exports = (options = {}, cb) ->
   options = _.extend(defaultOptions, options)
 
+  # Validate options
   if not options?.url?
     cb("The URL option is required both for 'faking' (i.e. for providing the HTML) and loading an actual website")
-    return
+    return false
+
+  for attribute of options
+    switch attribute
+      when "log", "cssOnly", "ignoreExternalSheets"
+        if not _.isBoolean(options[attribute])
+          cb('Options type error: "log", "cssOnly", "ignoreExternalSheets" must be booleans.')   
+          return false
+      when "ignoreSheets", "ignoreSelectors"
+        if not _.isArray(options[attribute])
+          cb('Options type error: "ignoreSheets", "ignoreSelectors" must be arrays.')
+          return false
 
   if options.log
     console.log "Inlining #{options.url}", if options.html then "(fake URL with content)" else "" 
@@ -63,7 +77,7 @@ module.exports = exports = (options = {}, cb) ->
           return cb(error) if error
 
           if options.cssOnly
-            cb(null, usedCss)
+            cb(null, finalCSS)
           else
             returnChain = require("./phantom-chains/return")
 
@@ -86,7 +100,7 @@ module.exports = exports = (options = {}, cb) ->
         return cb(error) if error
 
         if options.cssOnly
-          cb(null, usedCss)
+          cb(null, finalCSS)
         else
           returnChain = require("./domino-chains/return")
 
