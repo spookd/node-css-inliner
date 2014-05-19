@@ -12,7 +12,7 @@ module.exports = exports =
 
     page.evaluate(evalFn, resultFn, options.cssExpose, stylesheets)
 
-  inject: (page, options, stylesheets, finalCSS, next) ->
+  exposeStylesheets: (page, options, stylesheets, finalCSS, next) ->
     evalFn = (name, stylesheets) ->
       script = document.createElement("script")
       script.innerHTML = "var #{name} = #{JSON.stringify(stylesheets)};"
@@ -23,7 +23,7 @@ module.exports = exports =
 
     page.evaluate(evalFn, resultFn, options.cssExpose, stylesheets)
 
-  inject: (page, options, stylesheets, finalCSS, next) ->
+  removeStylesheetsAndInjectUsedStyles: (page, options, stylesheets, finalCSS, next) ->
     evalFn = (options, stylesheets, finalCSS) ->
       links = document.querySelectorAll("link[rel='stylesheet']")
       linkForHref = (href) ->
