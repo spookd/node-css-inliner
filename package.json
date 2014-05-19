@@ -1,0 +1,43 @@
+{
+  "name": "css-inliner",
+  "version": "0.0.1",
+  "description": "Inline CSS of an HTML page to speed up loading and get rid of - or delay - loading of external stylesheets",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/spookd/node-css-inliner.git"
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "keywords": [
+    "node",
+    "js",
+    "css",
+    "inliner",
+    "page",
+    "speed",
+    "stylesheet"
+  ],
+  "author": "Nicolai Persson",
+  "licenses": [
+    {
+      "type": "Apache",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/spookd/node-css-inliner/issues"
+  },
+  "dependencies": {
+    "underscore": "~1.6.0",
+    "generic-pool": "~2.0.4",
+    "async": "~0.8.0",
+    "node-phantom-simple": "~1.2.0",
+    "clean-css": "~2.1.8",
+    "coffee-script": "~1.7.1",
+    "css": "~1.6.0",
+    "request": "~2.34.0",
+    "phantomjs": "~1.9.7-5"
+  }
+}
