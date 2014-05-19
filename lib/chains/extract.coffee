@@ -1,13 +1,10 @@
-async    = require("async")
-request  = require("request")
-css      = require("css")
-CleanCSS = require("clean-css")
-_        = require("underscore")
-
-
-url = require("url")
-
-filterChain  = require("./filter")
+async       = require("async")
+request     = require("request")
+css         = require("css")
+CleanCSS    = require("clean-css")
+_           = require("lodash")
+url         = require("url")
+filterChain = require("./filter")
 
 module.exports = exports =
   loadPageContent: (page, options, next) ->
@@ -54,8 +51,15 @@ module.exports = exports =
           if ignore instanceof RegExp and ignore.test(sheet.href)
             options.cout "|> Ignoring stylesheet (#{sheet.href}) because of ignore-rule #{ignore.toString()}"
             return no
+          return sheet.href isnt ignore
 
-          return sheet isnt ignore
+        if options.ignoreExternalSheets
+          urlParsed = url.parse(options.url)
+          sheetUrlParsed = url.parse(sheet.href)
+          if urlParsed.hostname isnt sheetUrlParsed.hostname
+            options.cout "|> Ignoring stylesheet (#{sheet.href}) because external stylesheets are ignored"
+            return no 
+          return true
 
       stylesheets = stylesheets.filter((sheet) -> return media.indexOf(sheet.media) isnt -1)
 

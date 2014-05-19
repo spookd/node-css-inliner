@@ -1,6 +1,6 @@
 async   = require("async")
 css     = require("css")
-_       = require("underscore")
+_       = require("lodash")
 
 dePseudify = (->
   ignoredPseudos = [
