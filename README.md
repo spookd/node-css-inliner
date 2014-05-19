@@ -40,5 +40,7 @@ Any contributions are welcome. Simply fork the repository and make a pull reques
 
 You can contact me through [Twitter](http://twitter.com/nicopersson) or by [creating an issue at my feedback repository](https://github.com/spookd/feedback/issues/new).
 
+In case the green men from outer space abduct me @mattsoltani have all the powers needed, too.
+
 ## License
 This module is released under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0.html).
