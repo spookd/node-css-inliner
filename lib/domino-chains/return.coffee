@@ -1,9 +1,10 @@
+url = require("url")
+
 module.exports = exports =
   exposeStylesheets: (document, options, sheets, finalCSS, next) ->
     return next(null) if not options.cssExpose or typeof options.cssExpose isnt "string"
 
     name = options.cssExpose
-
     script = document.createElement("script")
     script.innerHTML = "#{name} = #{JSON.stringify(sheets)};"
     script.innerHTML = "var " + script.innerHTML if name.indexOf(".") < 0
@@ -15,7 +16,7 @@ module.exports = exports =
     links = document.querySelectorAll("link[rel='stylesheet']")
     linkForHref = (href) ->
       for link in links
-        return link if link.href is href
+        return link if href is url.resolve(options.url, link.href)
 
     for sheet in sheets
       el = linkForHref(sheet.href)
