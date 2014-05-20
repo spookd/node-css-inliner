@@ -1,3 +1,5 @@
+url = require("url")
+
 module.exports = exports =
   exposeStylesheets: (page, options, stylesheets, finalCSS, next) ->
     return next(null) if not options.cssExpose or typeof options.cssExpose isnt "string"
@@ -19,7 +21,7 @@ module.exports = exports =
       links = document.querySelectorAll("link[rel='stylesheet']")
       linkForHref = (href) ->
         for link in links
-          return link if link.href is href
+          return link if href is url.resolve(options.url, link.href)
 
       try
         for sheet in stylesheets
