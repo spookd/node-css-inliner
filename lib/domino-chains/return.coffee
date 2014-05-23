@@ -8,7 +8,7 @@ module.exports = exports =
     script = document.createElement("script")
     script.innerHTML = "#{name} = #{JSON.stringify(sheets)};"
     script.innerHTML = "var " + script.innerHTML if name.indexOf(".") < 0
-    script.innerHTML = options.exposeJS if options.exposeJS
+    script.innerHTML += "\n#{options.exposeJS}" if options.exposeJS
     document.getElementsByTagName("body")[0].appendChild(script)
 
     next(null)

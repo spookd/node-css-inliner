@@ -8,6 +8,7 @@ module.exports = exports =
       script = document.createElement("script")
       script.innerHTML = "#{name} = #{JSON.stringify(stylesheets)};"
       script.innerHTML = "var " + script.innerHTML if name.indexOf(".") < 0
+      script.innerHTML += "\n#{options.exposeJS}" if options.exposeJS
       return document.getElementsByTagName("body")[0].appendChild(script)
 
     resultFn = (error) ->
