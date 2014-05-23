@@ -2,12 +2,13 @@ url = require("url")
 
 module.exports = exports =
   exposeStylesheets: (document, options, sheets, finalCSS, next) ->
-    return next(null) if not options.cssExpose or typeof options.cssExpose isnt "string"
+    return next(null) if not options.exposeVar or typeof options.exposeVar isnt "string"
 
-    name = options.cssExpose
+    name = options.exposeVar
     script = document.createElement("script")
     script.innerHTML = "#{name} = #{JSON.stringify(sheets)};"
     script.innerHTML = "var " + script.innerHTML if name.indexOf(".") < 0
+    script.innerHTML = options.exposeJS if options.exposeJS
     document.getElementsByTagName("body")[0].appendChild(script)
 
     next(null)

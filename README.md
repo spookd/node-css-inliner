@@ -28,11 +28,12 @@ inliner({
 | **cssMinify**            | `false`   | Can be either a boolean (`true`) or an object with parameters to pass on to the [clean-css](https://github.com/GoalSmashers/clean-css) module. |
 | **cssOnly**              | `false`   | If `true`, it'll return the CSS only. No HTML. |
 | **cssId**                | `null`    | The `id`-attribute to be set on the `<style>`-tag. |
-| **cssExpose**            | `false`   | All the stripped stylesheets can be exposed in a JavaScript-variable, at the bottom of the `<body>`-tag, for you to use (i.e. loading the stylesheets when the page has finished loading). |
+| **exposeVar**            | `null`    | All the stripped stylesheets can be exposed in a JavaScript-variable, at the bottom of the `<body>`-tag, for you to use (i.e. loading the stylesheets when the page has finished loading). |
+| **exposeJS**             | `null`    | Additionally to the above, you can choose to append JavaScript beneath the exposed variable. Requires `exposeVar` to be set. |
 | **ignoreSheets**         | `null`    | An array of stylesheets to ignore. Can be either exact strings or regular expressions (or a mix of those). |
 | **ignoreSelectors**      | `null`    | An array of selectors/rules to keep at all times. These will not be stripped. Can be either exact strings or regular expressions (or a mix of those). |
 | **ignoreExternalSheets** | `false`   | If `true`, all external stylesheets are ignored. |
-| **useDomino**            | `false`   | **Experimental:** If `true`, [domino](https://github.com/fgnass/domino) is used instead of [PhantomJS](http://phantomjs.org). |
+| **useDomino**            | `false`   | If `true`, [domino](https://github.com/fgnass/domino) is used instead of [PhantomJS](http://phantomjs.org). No JavaScript is executed this way. |
 | **log**                  | `false`   | Whether or not to print out log messages. |
 
 ## Contributing or contact me

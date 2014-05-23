@@ -10,6 +10,9 @@
   "directories": {
     "lib": "lib"
   },
+  "bin": {
+    "inlinecss": "bin/inlinecss"
+  },
   "keywords": [
     "node",
     "js",
@@ -33,6 +36,7 @@
     "async": "~0.8.0",
     "clean-css": "~2.1.8",
     "coffee-script": "~1.7.1",
+    "commander": "^2.2.0",
     "css": "~1.6.0",
     "domino": "^1.0.17",
     "generic-pool": "~2.0.4",

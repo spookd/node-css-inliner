@@ -13,8 +13,9 @@ defaultOptions =
   cssMinify:            no
   cssOnly:              no
   cssId:                no
-  cssExpose:            no
-
+  # CSS: Expose
+  exposeVar:            no
+  exposeJS:             no
 
   # Ignore
   ignoreSheets:         []
@@ -22,7 +23,7 @@ defaultOptions =
   ignoreExternalSheets: no
 
   # Miscellaneous
-  userAgent:            "CSS Inliner for node.js by Nicolai Persson"
+  userAgent:            "CSS Inliner for node.js"
   # !! Experimental
   useDomino:            no
 
