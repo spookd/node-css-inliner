@@ -29,8 +29,11 @@ parseListArgumentAllowingRegExp = (values) ->
 program = require("commander").version(packageData.version)
 .usage("[options] \n\t e.g. inlinecss --css-only --url http://getbootstrap.com/examples/jumbotron/ > styles.css")
 
-.option("-u, --url",
+.option("-u, --url <fake-url>",
     "a URL to fake when having stdin")
+
+.option("-h, --html <html>",
+    "JSON.stringify()'ed HTML string to parse")
 
 .option("-c, --css-only",
     "only return the final CSS")
@@ -92,28 +95,38 @@ run = ->
   require("../index.js") options, (error, cssOrHtml) ->
     process.stderr.write("#{error}\n") if error
     process.stdout.write("#{cssOrHtml}\n") unless error
-    process.exit(0)
+    process.exit(if error then 1 else 0)
 
 if program.args.length is 0
   return program.help() unless program.url? and typeof program.url is "string"
 
-  process.stdin.resume()
-  process.stdin.setEncoding("utf8")
-
   options.url  = program.url
-  options.html = ""
 
-  failFn = ->
-    program.help()
+  if program.html
+    try
+      options.html = JSON.parse("""{"html": "#{program.html.replace(/"/g, '\\"')}"}""").html
+      console.log options.html
+      process.exit()
+      run()
+    catch e
+      process.stderr.write("Error: #{e.toString()}\n")
+  else
+    process.stdin.resume()
+    process.stdin.setEncoding("utf8")
 
-  dummy = setTimeout(failFn, 1000)
-  
-  process.stdin.on "data", (chunk) ->
-    clearTimeout(dummy)
-    options.html += chunk
-  
-  process.stdin.on "end", ->
-    run()
+    options.html = ""
+
+    failFn = ->
+      program.help()
+
+    dummy = setTimeout(failFn, 1000)
+    
+    process.stdin.on "data", (chunk) ->
+      clearTimeout(dummy)
+      options.html += chunk
+    
+    process.stdin.on "end", ->
+      run()
 else
   options.url = program.args.pop()
   run()
